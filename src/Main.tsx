@@ -22,7 +22,7 @@ export default function Main() {
     const response = await axios(requestConfig);
     const items = response.data.results;
 
-    const result:any = [];
+    const result:any = [];//any型でなければとsetPostで追加出来ない
     items.map((item:AddressInfo) => {
       result.push(item.address1 + item.address2 + item.address3);
     });
