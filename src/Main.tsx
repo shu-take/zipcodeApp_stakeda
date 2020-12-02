@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -15,18 +15,28 @@ const apiBaseURL = "https://zipcloud.ibsnet.co.jp/api/search";
 
 export default function Main() {
   const [searchnum, setSearchNum] = React.useState("");
-  const [post, setPost] = React.useState([]);
+  const [post, setPost] = React.useState<string[]>([]);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const loadingView = <Text>loading</Text>;
 
   const getPostInfoAsync = async (postnumber: string) => {
-    const requestConfig = apiBaseURL + "?zipcode=" + postnumber;
-    const response = await axios(requestConfig);
-    const items = response.data.results;
+    setIsLoading(true);
+    try {
+      const requestConfig = apiBaseURL + "?zipcode=" + postnumber;
+      const response = await axios(requestConfig);
+      const items = response.data.results;
+      console.log(items);
 
-    const result:any = [];//any型でなければとsetPostで追加出来ない
-    items.map((item:AddressInfo) => {
-      result.push(item.address1 + item.address2 + item.address3);
-    });
-    setPost(result);
+      const result:string[] = [];
+      items.map((item:AddressInfo) => {
+        result.push(item.address1 + item.address2 + item.address3);
+      });
+      setPost(result);
+    } catch (error) {
+      alert(error);
+    }
+    setIsLoading(false);
   }
 
   return (
@@ -44,9 +54,12 @@ export default function Main() {
         }}
         title="検索"
       />
+      {isLoading ? loadingView : null}
       <FlatList
         data={post}
-        renderItem={({item}) => {return <Text>{item}</Text>}}
+        renderItem={({ item }) => {
+          return <Text>{item}</Text>;
+        }}
       />
     </SafeAreaView>
   );
