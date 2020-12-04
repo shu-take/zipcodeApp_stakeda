@@ -12,5 +12,3 @@ interface AddressInfo {
   kana2: string;
   kana3: string;
 }
-
-
